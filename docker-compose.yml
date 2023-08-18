@@ -1,0 +1,38 @@
+version: '3'
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend:/app
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - NODE_ENV=development
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - '5000:5000'
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
+      - PGUSER=dev_dg_pg_user
+      - PGPASSWORD=dev_db_pg_user
+      - PGHOST=db
+      - PGDATABASE=dev_lonely_db
+    depends_on:
+      - db
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: dev_dg_pg_user
+      POSTGRES_PASSWORD: dev_db_pg_user
+      POSTGRES_DB: dev_lonely_db
+    ports:
+      - '5432:5432'
